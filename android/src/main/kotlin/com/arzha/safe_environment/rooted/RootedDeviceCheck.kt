@@ -149,18 +149,18 @@ class RootedDeviceCheck {
             return false
         }
 
-        private fun isHaveDangerousApps(): Boolean {
+        private fun isHaveDangerousApps(context: Context): Boolean {
             val packages = dangerousListApps.toList()
-            return isAnyPackageFromListInstalled(packages)
+            return isAnyPackageFromListInstalled(context, packages)
         }
 
-        private fun isHaveRootManagementApps(): Boolean {
+        private fun isHaveRootManagementApps(context: Context): Boolean {
             val packages = rootsAppPackage.toList()
-            return isAnyPackageFromListInstalled(packages)
+            return isAnyPackageFromListInstalled(context, packages)
         }
 
-        private fun isAnyPackageFromListInstalled(pkg: List<String>): Boolean {
-            val pm = applicationContext.packageManager
+        private fun isAnyPackageFromListInstalled(context: Context, pkg: List<String>): Boolean {
+            val pm = context.packageManager 
             return pkg.any { packageName ->
                 try {
                     pm.getPackageInfo(packageName, 0)
@@ -188,7 +188,15 @@ class RootedDeviceCheck {
             } else {
                 LessThan23()
             }
-            return check.checkRootedDevice() || rootBeerCheck(context) || isHaveReadWritePermission() || isPathExist("su") || isSUExist() || isTestBuildKey() || isHaveDangerousApps() || isHaveRootManagementApps() || isHaveDangerousProperties()
+            return (check.checkRootedDevice() || 
+                    rootBeerCheck(context) ||
+                    isHaveReadWritePermission() ||
+                    isPathExist("su") ||
+                    isSUExist() ||
+                    isTestBuildKey() ||
+                    isHaveDangerousApps(context) ||
+                    isHaveRootManagementApps(context) ||
+                    isHaveDangerousProperties())
         }
 
         private fun rootBeerCheck(context: Context): Boolean {
