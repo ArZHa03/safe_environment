@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 
-class DevelopmentModeCheck {
+class UsbDebuggingCheck {
     companion object{
         fun isUsbDebuggingEnabled(context: Context): Boolean {
             if(Integer.valueOf(Build.VERSION.SDK_INT) == 16) {
