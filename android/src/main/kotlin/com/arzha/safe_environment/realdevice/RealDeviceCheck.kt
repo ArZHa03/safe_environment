@@ -1,25 +1,21 @@
 package com.arzha.safe_environment.realdevice
 
 import android.os.Build
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.File
 
 class RealDeviceCheck {
     companion object {
-        private val GENY_FILES = arrayListOf(
+        private val GENY_FILES = listOf(
             "/dev/socket/genyd",
             "/dev/socket/baseband_genyd"
         )
 
-        private val PIPES = arrayListOf(
+        private val PIPES = listOf(
             "/dev/socket/qemud",
             "/dev/qemu_pipe"
         )
 
-        private val X86_FILES = arrayListOf(
+        private val X86_FILES = listOf(
             "ueventd.android_x86.rc",
             "x86.prop",
             "ueventd.ttVM_x86.rc",
@@ -30,12 +26,12 @@ class RealDeviceCheck {
             "ueventd.vbox86.rc"
         )
 
-        private val ANDY_FILES = arrayListOf(
+        private val ANDY_FILES = listOf(
             "fstab.andy",
             "ueventd.andy.rc"
         )
 
-        private val NOX_FILES = arrayListOf(
+        private val NOX_FILES = listOf(
             "fstab.nox",
             "init.nox.rc",
             "ueventd.nox.rc"
