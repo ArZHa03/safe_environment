@@ -116,16 +116,13 @@ class RealDeviceCheck {
                     Build.MANUFACTURER.contains("Genymotion") ||
                     Build.MODEL.startsWith("sdk_") ||
                     Build.DEVICE.startsWith("emulator") ||
-                    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
-                    "google_sdk" == Build.PRODUCT
                     ("QC_Reference_Phone" == Build.BOARD && !"xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)) ||
-                    Build.MANUFACTURER.contains("Genymotion") ||
                     (Build.HOST.startsWith("Build") && !Build.MANUFACTURER.equals("sony", ignoreCase = true)) ||
-                    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) || 
-                    Build.PRODUCT == "google_sdk" ||
+                    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
                     SystemProperties.get("ro.kernel.qemu") == "1" ||
                     Build.HARDWARE.contains("goldfish") ||
                     Build.HARDWARE.contains("ranchu") ||
+                    Build.PRODUCT.contains("google_sdk") || 
                     Build.PRODUCT.contains("vbox86p") ||
                     Build.PRODUCT.toLowerCase().contains("nox") ||
                     Build.BOARD.toLowerCase().contains("nox") ||
