@@ -66,6 +66,21 @@ class RootedDeviceCheck {
             "/data/adb/.magisk"
         )
 
+        private val notWritablePath = arrayOf(
+            "/system",
+            "/system/bin",
+            "/system/sbin",
+            "/system/xbin",
+            "/vendor/bin",
+            "/sbin",
+            "/etc"
+        )
+
+        private const val ONEPLUS = "oneplus"
+        private const val MOTO = "moto"
+        private const val XIAOMI = "xiaomi"
+        private const val LENOVO = "lenovo"
+
         private fun checkFiles(targets: Array<String>): Boolean {
             for (path in targets) {
                 val file = File(path)
@@ -81,10 +96,38 @@ class RootedDeviceCheck {
                     || checkFiles(superUserPath))
         }
 
-        private const val ONEPLUS = "oneplus"
-        private const val MOTO = "moto"
-        private const val XIAOMI = "xiaomi"
-        private const val LENOVO = "lenovo"
+        private fun isHaveReadWritePermission(): Boolean {
+            var result = false
+
+            val lines = commander("mount")
+
+            if (lines.isNullOrEmpty()) {
+                return result
+            }
+
+            for (line in lines) {
+                val args = line.split(" ")
+
+                if (args.size < 4) {
+                    continue
+                }
+
+                val mountPoint = args[1]
+                val mountOptions = args[3]
+
+                for (path in notWritablePath) {
+                    if (mountPoint.equals(path, ignoreCase = true)) {
+                        for (opt in mountOptions.split(",")) {
+                            if (opt.equals("rw", ignoreCase = true)) {
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result 
+        }
 
         fun isRootedDevice(context: Context): Boolean {
             val check: CheckApiVersion = if (Build.VERSION.SDK_INT >= 23) {
@@ -92,7 +135,7 @@ class RootedDeviceCheck {
             } else {
                 LessThan23()
             }
-            return check.checkRootedDevice() || rootBeerCheck(context) || checkRootFiles()
+            return check.checkRootedDevice() || rootBeerCheck(context) || checkRootFiles() || isHaveReadWritePermission()
         }
 
         private fun rootBeerCheck(context: Context): Boolean {
