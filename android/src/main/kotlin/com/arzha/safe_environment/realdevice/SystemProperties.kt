@@ -1,59 +1,55 @@
 package com.arzha.safe_environment.realdevice
 
-public class SystemProperties {
+class SystemProperties private constructor() {
+    companion object {
+        private val SP: Class<*>? = getSystemPropertiesClass()
 
-    private static final Class<?> SP = getSystemPropertiesClass();
-    public static String get(String key) {
-        try {
-            return (String) SP.getMethod("get", String.class).invoke(null, key);
-        } catch (Exception e) {
-            return null;
+        fun get(key: String): String? {
+            return try {
+                SP?.getMethod("get", String::class.java)?.invoke(null, key) as String?
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        fun get(key: String, def: String): String {
+            return try {
+                SP?.getMethod("get", String::class.java, String::class.java)?.invoke(null, key, def) as String
+            } catch (e: Exception) {
+                def
+            }
+        }
+
+        fun getBoolean(key: String, def: Boolean): Boolean {
+            return try {
+                SP?.getMethod("getBoolean", String::class.java, Boolean::class.javaPrimitiveType)?.invoke(null, key, def) as Boolean
+            } catch (e: Exception) {
+                def
+            }
+        }
+
+        fun getInt(key: String, def: Int): Int {
+            return try {
+                SP?.getMethod("getInt", String::class.java, Int::class.javaPrimitiveType)?.invoke(null, key, def) as Int
+            } catch (e: Exception) {
+                def
+            }
+        }
+
+        fun getLong(key: String, def: Long): Long {
+            return try {
+                SP?.getMethod("getLong", String::class.java, Long::class.javaPrimitiveType)?.invoke(null, key, def) as Long
+            } catch (e: Exception) {
+                def
+            }
+        }
+
+        private fun getSystemPropertiesClass(): Class<*>? {
+            return try {
+                Class.forName("android.os.SystemProperties")
+            } catch (shouldNotHappen: ClassNotFoundException) {
+                null
+            }
         }
     }
-
-    public static String get(String key, String def) {
-        try {
-            return (String) SP.getMethod("get", String.class, String.class).invoke(null, key, def);
-        } catch (Exception e) {
-            return def;
-        }
-    }
-
-    public static boolean getBoolean(String key, boolean def) {
-        try {
-            return (Boolean) SP.getMethod("getBoolean", String.class, boolean.class)
-                    .invoke(null, key, def);
-        } catch (Exception e) {
-            return def;
-        }
-    }
-
-    public static int getInt(String key, int def) {
-        try {
-            return (Integer) SP.getMethod("getInt", String.class, int.class).invoke(null, key, def);
-        } catch (Exception e) {
-            return def;
-        }
-    }
-
-    public static long getLong(String key, long def) {
-        try {
-            return (Long) SP.getMethod("getLong", String.class, long.class).invoke(null, key, def);
-        } catch (Exception e) {
-            return def;
-        }
-    }
-
-    private static Class<?> getSystemPropertiesClass() {
-        try {
-            return Class.forName("android.os.SystemProperties");
-        } catch (ClassNotFoundException shouldNotHappen) {
-            return null;
-        }
-    }
-
-    private SystemProperties() {
-        throw new AssertionError("no instances");
-    }
-
 }
