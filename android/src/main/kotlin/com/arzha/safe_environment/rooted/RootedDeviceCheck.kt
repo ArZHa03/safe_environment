@@ -66,16 +66,6 @@ class RootedDeviceCheck {
             "/data/adb/.magisk"
         )
 
-        private val notWritablePath = arrayOf(
-            "/system",
-            "/system/bin",
-            "/system/sbin",
-            "/system/xbin",
-            "/vendor/bin",
-            "/sbin",
-            "/etc"
-        )
-
         private fun checkFiles(targets: Array<String>): Boolean {
             for (path in targets) {
                 val file = File(path)
@@ -88,8 +78,7 @@ class RootedDeviceCheck {
             return (checkFiles(rootsAppPackage)
                     || checkFiles(dangerousListApps)
                     || checkFiles(rootCloakingApps)
-                    || checkFiles(superUserPath)
-                    || checkFiles(notWritablePath))
+                    || checkFiles(superUserPath))
         }
 
         private const val ONEPLUS = "oneplus"
