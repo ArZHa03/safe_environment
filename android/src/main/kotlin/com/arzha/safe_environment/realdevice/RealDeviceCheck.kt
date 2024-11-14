@@ -23,11 +23,6 @@ class RealDeviceCheck {
         )
         private val ANDY_FILES = listOf("fstab.andy", "ueventd.andy.rc")
         private val NOX_FILES = listOf("fstab.nox", "init.nox.rc", "ueventd.nox.rc")
-        private val KNOWN_NUMBERS = listOf("15555215554", "15555215556", "15555215558", "15555215560", "15555215562", "15555215564", "15555215566",
-            "15555215568", "15555215570", "15555215572", "15555215574", "15555215576", "15555215578",
-            "15555215580", "15555215582", "15555215584")
-        private val KNOWN_DEVICE_IDS = listOf("000000000000000", "e21833235b6eef10", "012345678912345")
-        private val KNOWN_IMSI_IDS = listOf("310260000000000")
         private val KNOWN_FILES = listOf("/system/lib/libc_malloc_debug_qemu.so", "/sys/qemu_trace", "/system/bin/qemu-props")
         private val KNOWN_QEMU_DRIVERS = listOf("goldfish")
         
@@ -40,7 +35,7 @@ class RealDeviceCheck {
         }
 
         private fun checkEmulatorFiles(): Boolean {
-            return checkFiles(GENY_FILES) || checkFiles(ANDY_FILES) || checkFiles(NOX_FILES) || checkFiles(X86_FILES) || checkFiles(PIPES)
+            return checkFiles(GENY_FILES) || checkFiles(ANDY_FILES) || checkFiles(NOX_FILES) || checkFiles(X86_FILES) || checkFiles(PIPES) || checkFiles(KNOWN_FILES)
         }
 
         private fun checkEmulatorProperties(): Boolean {
@@ -51,36 +46,6 @@ class RealDeviceCheck {
                     return true
                 }
             }
-            return false
-        }
-
-        private fun hasKnownPhoneNumber(context: Context): Boolean {
-            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            val phoneNumber = telephonyManager.line1Number
-            if (KNOWN_NUMBERS.contains(phoneNumber)) {
-                return true
-            }
-            
-            return false
-        }
-
-        private fun hasKnownDeviceId(context: Context): Boolean {
-            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            val deviceId = telephonyManager.deviceId
-            if (KNOWN_DEVICE_IDS.contains(deviceId)) {
-                return true
-            }
-            
-            return false
-        }
-
-        private fun hasKnownImsi(context: Context): Boolean {
-            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            val imsi = telephonyManager.subscriberId
-            if (KNOWN_IMSI_IDS.contains(imsi)) {
-                return true
-            }
-            
             return false
         }
 
@@ -131,9 +96,6 @@ class RealDeviceCheck {
                     Build.HARDWARE == "vbox86" ||
                     checkEmulatorFiles() ||
                     checkEmulatorProperties() ||
-                    hasKnownPhoneNumber(context) ||
-                    hasKnownDeviceId(context) ||
-                    hasKnownImsi(context) ||
                     hasQEmuDrivers())
         }
     }
