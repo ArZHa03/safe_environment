@@ -108,7 +108,7 @@ class RealDeviceCheck {
         }
 
         fun isRealDevice(context: Context): Boolean {
-            return !(Build.FINGERPRINT.startsWith("generic") ||
+            return (Build.FINGERPRINT.startsWith("generic") ||
                     Build.FINGERPRINT.startsWith("unknown") ||
                     Build.MODEL.contains("google_sdk") ||
                     Build.MODEL.contains("Emulator") ||
@@ -116,12 +116,12 @@ class RealDeviceCheck {
                     Build.MANUFACTURER.contains("Genymotion") ||
                     Build.MODEL.startsWith("sdk_") ||
                     Build.DEVICE.startsWith("emulator") ||
-                    Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic") ||
+                    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
                     "google_sdk" == Build.PRODUCT
-                    "QC_Reference_Phone" == Build.BOARD && !"xiaomi".equals(Build.MANUFACTURER, ignoreCase = true) ||
+                    ("QC_Reference_Phone" == Build.BOARD && !"xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)) ||
                     Build.MANUFACTURER.contains("Genymotion") ||
                     (Build.HOST.startsWith("Build") && !Build.MANUFACTURER.equals("sony", ignoreCase = true)) ||
-                    Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic") ||
+                    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) || 
                     Build.PRODUCT == "google_sdk" ||
                     SystemProperties.get("ro.kernel.qemu") == "1" ||
                     Build.HARDWARE.contains("goldfish") ||
