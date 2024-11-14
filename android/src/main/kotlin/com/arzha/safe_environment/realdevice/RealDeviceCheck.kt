@@ -8,23 +8,18 @@ import java.util.Arrays;
 import java.util.List;
 
 class RealDeviceCheck {
-    
-    private static ArrayList<String> GENY_FILES = new ArrayList<>(
-        Arrays.asList(
+    companion object {
+        private val GENY_FILES = arrayListOf(
             "/dev/socket/genyd",
             "/dev/socket/baseband_genyd"
         )
-    );
 
-    private static ArrayList<String> PIPES = new ArrayList<>(
-        Arrays.asList(
+        private val PIPES = arrayListOf(
             "/dev/socket/qemud",
             "/dev/qemu_pipe"
         )
-    );
 
-    private static ArrayList<String> X86_FILES = new ArrayList<>(
-        Arrays.asList(
+        private val X86_FILES = arrayListOf(
             "ueventd.android_x86.rc",
             "x86.prop",
             "ueventd.ttVM_x86.rc",
@@ -34,41 +29,34 @@ class RealDeviceCheck {
             "init.vbox86.rc",
             "ueventd.vbox86.rc"
         )
-    );
 
-    private static ArrayList<String> ANDY_FILES = new ArrayList<>(
-        Arrays.asList(
+        private val ANDY_FILES = arrayListOf(
             "fstab.andy",
             "ueventd.andy.rc"
         )
-    );
 
-    private static ArrayList<String> NOX_FILES = new ArrayList<>(
-        Arrays.asList(
+        private val NOX_FILES = arrayListOf(
             "fstab.nox",
             "init.nox.rc",
             "ueventd.nox.rc"
         )
-    );
 
-    private static boolean checkFiles(List<String> targets){
-        for(String pipe : targets){
-            File file = new File(pipe);
-            if (file.exists())
-                return true;
+        private fun checkFiles(targets: List<String>): Boolean {
+            for (pipe in targets) {
+                val file = File(pipe)
+                if (file.exists()) return true
+            }
+            return false
         }
-        return false;
-    }
 
-    private static boolean checkEmulatorFiles (){
-        return (checkFiles(GENY_FILES)
-                || checkFiles(ANDY_FILES)
-                || checkFiles(NOX_FILES)
-                || checkFiles(X86_FILES)
-                || checkFiles(PIPES));
-    }
-    
-    companion object{
+        private fun checkEmulatorFiles(): Boolean {
+            return (checkFiles(GENY_FILES)
+                    || checkFiles(ANDY_FILES)
+                    || checkFiles(NOX_FILES)
+                    || checkFiles(X86_FILES)
+                    || checkFiles(PIPES))
+        }
+
         fun isRealDevice(): Boolean {
             return (Build.FINGERPRINT.startsWith("generic")
                     || Build.FINGERPRINT.startsWith("unknown")
@@ -80,9 +68,9 @@ class RealDeviceCheck {
                     || Build.DEVICE.startsWith("emulator"))
                     || Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")
                     || "google_sdk" == Build.PRODUCT
-                    || "QC_Reference_Phone" == Build.BOARD && !"xiaomi".equalsIgnoreCase(Build.MANUFACTURER)
+                    || "QC_Reference_Phone" == Build.BOARD && !"xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)
                     || Build.MANUFACTURER.contains("Genymotion")
-                    || (Build.HOST.startsWith("Build") && !Build.MANUFACTURER.equalsIgnoreCase("sony"))
+                    || (Build.HOST.startsWith("Build") && !Build.MANUFACTURER.equals("sony", ignoreCase = true))
                     || Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")
                     || Build.PRODUCT == "google_sdk"
                     || SystemProperties.get("ro.kernel.qemu") == "1"
