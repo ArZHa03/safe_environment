@@ -3,7 +3,6 @@ package com.arzha.safe_environment.realdevice
 import android.content.Context
 import android.os.Build
 import android.telephony.TelephonyManager
-import android.util.Log
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -45,10 +44,7 @@ class RealDeviceCheck {
         }
 
         private fun checkEmulatorProperties(): Boolean {
-            val props = listOf(
-                "init.svc.qemud", "init.svc.qemu-props", "qemu.hw.mainkeys", "qemu.sf.fake_camera",
-                "qemu.sf.lcd_density", "ro.bootloader", "ro.bootmode", "ro.hardware", "ro.kernel.android.qemud"
-            )
+            val props = listOf("init.svc.qemud", "init.svc.qemu-props", "qemu.hw.mainkeys", "qemu.sf.fake_camera", "qemu.sf.lcd_density", "ro.kernel.android.qemud", "ro.kernel.qemu.gles", "ro.serialno")
             for (prop in props) {
                 val value = System.getProperty(prop)
                 if (value != null && value.contains("qemu")) {
@@ -60,40 +56,31 @@ class RealDeviceCheck {
 
         private fun hasKnownPhoneNumber(context: Context): Boolean {
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            try {
-                val phoneNumber = telephonyManager.line1Number
-                if (KNOWN_NUMBERS.contains(phoneNumber)) {
-                    return true
-                }
-            } catch (exception: SecurityException) {
-                Log.v("RealDeviceCheck", "Unable to get phone number: ${exception.message}")
+            val phoneNumber = telephonyManager.line1Number
+            if (KNOWN_NUMBERS.contains(phoneNumber)) {
+                return true
             }
+            
             return false
         }
 
         private fun hasKnownDeviceId(context: Context): Boolean {
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            try {
-                val deviceId = telephonyManager.deviceId
-                if (KNOWN_DEVICE_IDS.contains(deviceId)) {
-                    return true
-                }
-            } catch (exception: SecurityException) {
-                Log.v("RealDeviceCheck", "Unable to get device ID: ${exception.message}")
+            val deviceId = telephonyManager.deviceId
+            if (KNOWN_DEVICE_IDS.contains(deviceId)) {
+                return true
             }
+            
             return false
         }
 
         private fun hasKnownImsi(context: Context): Boolean {
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            try {
-                val imsi = telephonyManager.subscriberId
-                if (KNOWN_IMSI_IDS.contains(imsi)) {
-                    return true
-                }
-            } catch (exception: SecurityException) {
-                Log.v("RealDeviceCheck", "Unable to get IMSI: ${exception.message}")
+            val imsi = telephonyManager.subscriberId
+            if (KNOWN_IMSI_IDS.contains(imsi)) {
+                return true
             }
+            
             return false
         }
 
@@ -129,6 +116,22 @@ class RealDeviceCheck {
                     Build.MANUFACTURER.contains("Genymotion") ||
                     Build.MODEL.startsWith("sdk_") ||
                     Build.DEVICE.startsWith("emulator") ||
+                    Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic") ||
+                    "google_sdk" == Build.PRODUCT
+                    "QC_Reference_Phone" == Build.BOARD && !"xiaomi".equals(Build.MANUFACTURER, ignoreCase = true) ||
+                    Build.MANUFACTURER.contains("Genymotion") ||
+                    (Build.HOST.startsWith("Build") && !Build.MANUFACTURER.equals("sony", ignoreCase = true)) ||
+                    Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic") ||
+                    Build.PRODUCT == "google_sdk" ||
+                    SystemProperties.get("ro.kernel.qemu") == "1" ||
+                    Build.HARDWARE.contains("goldfish") ||
+                    Build.HARDWARE.contains("ranchu") ||
+                    Build.PRODUCT.contains("vbox86p") ||
+                    Build.PRODUCT.toLowerCase().contains("nox") ||
+                    Build.BOARD.toLowerCase().contains("nox") ||
+                    Build.HARDWARE.toLowerCase().contains("nox") ||
+                    Build.MODEL.toLowerCase().contains("droid4x") ||
+                    Build.HARDWARE == "vbox86" ||
                     checkEmulatorFiles() ||
                     checkEmulatorProperties() ||
                     hasKnownPhoneNumber(context) ||
