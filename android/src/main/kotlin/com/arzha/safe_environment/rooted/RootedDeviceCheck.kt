@@ -2,9 +2,12 @@ package com.arzha.safe_environment.rooted
 
 import android.content.Context
 import android.os.Build
-import com.scottyab.rootbeer.RootBeer
+import android.content.pm.PackageManager
+import java.io.BufferedReader
 import java.io.File
-import java.util.*
+import java.io.InputStreamReader
+import java.util.Scanner
+import java.util.Locale
 
 class RootedDeviceCheck {
     companion object {
@@ -81,40 +84,15 @@ class RootedDeviceCheck {
         private const val XIAOMI = "xiaomi"
         private const val LENOVO = "lenovo"
 
-        private fun checkFiles(targets: Array<String>): Boolean {
-            for (path in targets) {
-                val file = File(path)
-                if (file.exists()) return true
-            }
-            return false
-        }
-
-        private fun checkRootFiles(): Boolean {
-            return (checkFiles(rootsAppPackage)
-                    || checkFiles(dangerousListApps)
-                    || checkFiles(rootCloakingApps)
-                    || checkFiles(superUserPath))
-        }
-
         private fun isHaveReadWritePermission(): Boolean {
             var result = false
-
             val lines = commander("mount")
-
-            if (lines.isNullOrEmpty()) {
-                return result
-            }
-
+            if (lines.isNullOrEmpty()) return result
             for (line in lines) {
                 val args = line.split(" ")
-
-                if (args.size < 4) {
-                    continue
-                }
-
+                if (args.size < 4) continue
                 val mountPoint = args[1]
                 val mountOptions = args[3]
-
                 for (path in notWritablePath) {
                     if (mountPoint.equals(path, ignoreCase = true)) {
                         for (opt in mountOptions.split(",")) {
@@ -125,8 +103,82 @@ class RootedDeviceCheck {
                     }
                 }
             }
+            return result
+        }
 
-            return result 
+        private fun isSUExist(): Boolean {
+            return try {
+                val process = Runtime.getRuntime().exec(arrayOf("/system/xbin/which", "su"))
+                val reader = BufferedReader(InputStreamReader(process.inputStream))
+                reader.readLine() != null
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        private fun isTestBuildKey(): Boolean {
+            val buildTags = Build.TAGS
+            return buildTags != null && buildTags.contains("test-keys")
+        }
+
+        private fun isPathExist(ext: String): Boolean {
+            superUserPath.forEach { path ->
+                if (File(path).exists()) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        private fun isHaveDangerousProperties(): Boolean {
+            val dangerousProps = mapOf(
+                "ro.debuggable" to "1",
+                "ro.secure" to "0"
+            )
+            val lines = commander("getprop")
+            if (lines == null) return false
+
+            lines.forEach { line ->
+                dangerousProps.forEach { (key, badValue) ->
+                    if (line.contains(key) && line.contains("[$badValue]")) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+        private fun isHaveDangerousApps(): Boolean {
+            val packages = dangerousListApps.toList()
+            return isAnyPackageFromListInstalled(packages)
+        }
+
+        private fun isHaveRootManagementApps(): Boolean {
+            val packages = rootsAppPackage.toList()
+            return isAnyPackageFromListInstalled(packages)
+        }
+
+        private fun isAnyPackageFromListInstalled(pkg: List<String>): Boolean {
+            val pm = applicationContext.packageManager
+            return pkg.any { packageName ->
+                try {
+                    pm.getPackageInfo(packageName, 0)
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+            }
+        }
+
+        private fun commander(command: String): Array<String>? {
+            return try {
+                val process = Runtime.getRuntime().exec(command)
+                val inputStream = process.inputStream
+                val result = Scanner(inputStream).useDelimiter("\\A").next()
+                result.split("\n").toTypedArray()
+            } catch (e: Exception) {
+                null
+            }
         }
 
         fun isRootedDevice(context: Context): Boolean {
@@ -135,7 +187,7 @@ class RootedDeviceCheck {
             } else {
                 LessThan23()
             }
-            return check.checkRootedDevice() || rootBeerCheck(context) || checkRootFiles() || isHaveReadWritePermission()
+            return check.checkRootedDevice() || rootBeerCheck(context) || isHaveReadWritePermission() || isPathExist("su") || isSUExist() || isTestBuildKey() || isHaveDangerousApps() || isHaveRootManagementApps() || isHaveDangerousProperties()
         }
 
         private fun rootBeerCheck(context: Context): Boolean {
