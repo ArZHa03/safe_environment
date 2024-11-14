@@ -23,7 +23,7 @@ class RealDeviceCheck {
         )
         private val ANDY_FILES = listOf("fstab.andy", "ueventd.andy.rc")
         private val NOX_FILES = listOf("fstab.nox", "init.nox.rc", "ueventd.nox.rc")
-        private val KNOWN_FILES = listOf("/system/lib/libc_malloc_debug_qemu.so", "/sys/qemu_trace", "/system/bin/qemu-props")
+        private val KNOWN_FILES = listOf("/system/lib/libc_malloc_debug_qemu.so", "/sys/qemu_trace", "/system/bin/qemu-props", "/mnt/shared")
         private val KNOWN_QEMU_DRIVERS = listOf("goldfish")
         
         private fun checkFiles(targets: List<String>): Boolean {
