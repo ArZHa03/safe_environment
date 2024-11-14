@@ -6,7 +6,7 @@ import android.content.Context
 import com.arzha.safe_environment.externalstorage.ExternalStorageCheck
 import com.arzha.safe_environment.realdevice.RealDeviceCheck
 import com.arzha.safe_environment.rooted.RootedDeviceCheck
-import com.arzha.safe_environment.usbdebugging.UsbDebuggingCheck
+import com.arzha.safe_environment.usbdebug.UsbDebuggingCheck
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
