@@ -1,6 +1,6 @@
 name: safe_environment
 description: "A plugin fot check the integrity device."
-version: 0.0.1
+version: 1.0.1
 homepage: ''
 
 environment:
