@@ -1,4 +1,4 @@
-# safe_environment
+# Safe Environment
 
 A plugin to check the integrity of the device.
 
