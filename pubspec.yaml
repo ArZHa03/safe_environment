@@ -1,7 +1,7 @@
 name: safe_environment
 description: "A plugin fot check the integrity device."
 version: 1.0.0
-homepage: ''
+homepage: https://github.com/ArZHa03/safe_environment
 
 environment:
   sdk: ^3.5.3
@@ -10,10 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: any
+  plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
-  flutter_lints: any
+  flutter_lints: ^5.0.0
 
 flutter:
   plugin:
